@@ -10,8 +10,6 @@ AWS.config.update({
 const ep = new AWS.Endpoint("https://sgp1.digitaloceanspaces.com/");
 const s3 = new AWS.S3({ endpoint: ep });
 
-exports.s3 = s3;
-
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -20,9 +18,8 @@ const app = express();
 app.use(bodyParser.json());
 
 app.post('/screenshot/variant/:variantId', (req, res) => {   
-    let newBrowser , newPage
+    let newBrowser , newPage, location
     const url = req.body.url || "www.google.com"
-    let location
     chromium.launch()
     .then(browser => {
         newBrowser = browser

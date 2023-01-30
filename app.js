@@ -20,8 +20,9 @@ const app = express();
 app.use(bodyParser.json());
 
 app.post('/screenshot/variant/:variantId', (req, res) => {   
-    let newBrowser , newPage;
+    let newBrowser , newPage
     const url = req.body.url || "www.google.com"
+    let location
     chromium.launch()
     .then(browser => {
         newBrowser = browser
@@ -37,8 +38,9 @@ app.post('/screenshot/variant/:variantId', (req, res) => {
         const params = { Bucket: "sp-assets-staging", Key: `screenshots/variants/${req.params.variantId}`, Body: screenshot, ContentType: "image/jpeg", ACL: "public-read" }
         return s3.upload(params).promise();
     })
+    .then(res => location = res.Location)
     .then(() => newBrowser.close())
-    .then(() => res.status(201).json({type: "success"}))
+    .then(() => res.status(201).json({type: "success", screenshotURL : location}))
 });
 
 app.listen(4000, () => console.log('server started'));
